@@ -1,11 +1,15 @@
 import React from 'react'
 import { SafeAreaView, StatusBar } from 'react-native'
-import { createStackNavigator } from '@react-navigation/stack'
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from '@react-navigation/stack'
 import { NavigationContainer } from '@react-navigation/native'
-import { StartupContainer } from '@/Containers'
+import { ExampleContainer, StartupContainer } from '@/Containers'
 import { useTheme } from '@/Hooks'
 import MainNavigator from './Main'
 import { navigationRef } from './utils'
+import Home from '@/Containers/Home'
 
 const Stack = createStackNavigator()
 
@@ -19,12 +23,28 @@ const ApplicationNavigator = () => {
       <NavigationContainer theme={NavigationTheme} ref={navigationRef}>
         <StatusBar barStyle={darkMode ? 'light-content' : 'dark-content'} />
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Startup" component={StartupContainer} />
           <Stack.Screen
-            name="Main"
-            component={MainNavigator}
+            name="Home"
+            component={Home}
             options={{
-              animationEnabled: false,
+              animationEnabled: true,
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="Settings"
+            component={ExampleContainer}
+            options={{
+              animationEnabled: true,
+              ...TransitionPresets.ModalPresentationIOS,
+            }}
+          />
+          <Stack.Screen
+            name="Dark"
+            component={ExampleContainer}
+            options={{
+              animationEnabled: true,
+              ...TransitionPresets.ModalPresentationIOS,
             }}
           />
         </Stack.Navigator>

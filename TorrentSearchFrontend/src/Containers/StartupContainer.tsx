@@ -18,7 +18,7 @@ const StartupContainer = () => {
       }, 2000),
     )
     await setDefaultTheme({ theme: 'default', darkMode: null })
-    navigateAndSimpleReset('Main')
+    navigateAndSimpleReset('Home')
   }
 
   useEffect(() => {
@@ -27,8 +27,7 @@ const StartupContainer = () => {
 
   return (
     <View style={[Layout.fill, Layout.colCenter]}>
-      <Brand />
-      <ActivityIndicator size={'large'} style={[Gutters.largeVMargin]} />
+      <ActivityIndicator size={'small'} style={[Gutters.largeVMargin]} />
       <Text style={Fonts.textCenter}>{t('welcome')}</Text>
     </View>
   )
