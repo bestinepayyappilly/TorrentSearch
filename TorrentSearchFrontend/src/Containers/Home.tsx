@@ -1,8 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   ActivityIndicator,
+  Alert,
+  Animated,
   Dimensions,
+  FlatList,
   Image,
+  Keyboard,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -19,6 +23,8 @@ import { copy, Loading, SearchIllustration } from '@/Assets'
 import Clipboard from '@react-native-clipboard/clipboard'
 import { Header, Searchbar } from '@/Components'
 import ImageContainer from '@/Components/ImageContainer/ImageContainer'
+import Ionicons from 'react-native-vector-icons/Ionicons'
+import Octicons from 'react-native-vector-icons/Octicons'
 
 const { height, width } = Dimensions.get('screen')
 const Loader = () => {
@@ -35,37 +41,60 @@ const Loader = () => {
     </View>
   )
 }
-// '#2abba7'
-// '#18191a'
+
 const Home = () => {
   const [query, setQuery] = useState('')
-  const [loader, setLoader] = useState(false)
+  const [loader, setLoader] = useState<boolean>(false)
   const [data, setData] = useState<[] | undefined>(null)
-  const copyToClipboard = value => {
-    console.log(value)
-    Clipboard.setString(value)
-    ToastAndroid.show('copied to clipboard', 300)
+  const [PageNo, setPageNo] = useState(1)
+
+  const slideUp = useRef(new Animated.Value(100)).current
+
+  const Slide = () => {
+    Animated.spring(slideUp, {
+      toValue: height * 0.99 - height,
+      useNativeDriver: true,
+    }).start()
   }
-  let torrents = {}
-  // if (data?.length > 0) {
-  //   // console.log(data)
-  //   let [List] = data?.map(e => e.map(items => items))
-  //   // console.log(List.map(e => e.Name))
-  //   List.forEach(items => {
-  //     const { Name, Size, UploadedBy, Age, Seeders, Leechers, Url } = items
-  //     // console.log(Name, Url)
-  //     torrents = {
-  //       Name,
-  //       Url,
-  //       Size,
-  //       UploadedBy,
-  //       Age,
-  //       Seeders,
-  //       Leechers,
-  //     }
-  //     console.log(torrents)
-  //   })
-  // }
+  const SlideDown = () => {
+    Animated.spring(slideUp, {
+      toValue: height * 0.5,
+      useNativeDriver: true,
+    }).start()
+  }
+
+  if (data?.length > 1) {
+    Slide()
+  } else {
+    SlideDown()
+  }
+
+  const getData = (query: string, pageNo: number) => {
+    setData(null)
+    setPageNo(pageNo)
+    Keyboard.dismiss()
+    setLoader(true)
+    console.log(pageNo)
+    axios
+      .get(
+        'https://shielded-harbor-19811.herokuapp.com/api/all/' +
+          query +
+          '/' +
+          pageNo,
+      )
+      .then(response => {
+        setData(() => {
+          const [list] = response.data.map(e => e)
+          return list
+        })
+        setLoader(false)
+      })
+      .catch(e => {
+        Alert.alert('Error fetching results')
+        setLoader(false)
+      })
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
       <View style={{ paddingTop: StatusBar.currentHeight + 10, flex: 1 }}>
@@ -78,46 +107,228 @@ const Home = () => {
           }}
         >
           <Header />
-          <Searchbar />
+          <Searchbar
+            onPress={() => {
+              getData(query, 1)
+            }}
+            onChangeText={text => {
+              setQuery(text)
+            }}
+          />
         </View>
         <View
           style={{
             backgroundColor: '#b6c9f3',
             flex: 0.8,
-            alignItems: 'center',
+            // alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <ImageContainer
-            ImageContainerStyle={{ height: height / 3, width: height / 3 }}
-            imageProps={{ resizeMode: 'contain' }}
-            imageSrc={SearchIllustration}
-            imageStyle={{ height: '100%', width: '100%' }}
-          />
-          <View
+          {data?.length > 0 ? (
+            <FlatList
+              ListFooterComponent={() => {
+                return (
+                  <View
+                    style={{
+                      height: 150,
+                      backgroundColor: '#b6c9f3',
+                      paddingHorizontal: '5%',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={() => {
+                        getData(query, (pageNo = PageNo - 1))
+                      }}
+                      style={{
+                        height: 50,
+                        backgroundColor: '#fff',
+                        borderRadius: 8,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexDirection: 'row',
+                        paddingHorizontal: '10%',
+                      }}
+                    >
+                      <Ionicons name="arrow-back" size={25} color="#2b65f6" />
+                      <Text
+                        style={{
+                          color: '#2b65f6',
+                          fontSize: 16,
+                          fontWeight: '600',
+                          marginLeft: '3%',
+                        }}
+                      >
+                        Page {PageNo - 1}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        getData(query, (pageNo = PageNo + 1))
+                      }}
+                      style={{
+                        height: 50,
+                        backgroundColor: '#fff',
+                        borderRadius: 8,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexDirection: 'row',
+                        paddingHorizontal: '10%',
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: '#2b65f6',
+                          fontSize: 16,
+                          fontWeight: '600',
+                          marginRight: '3%',
+                        }}
+                      >
+                        Page {PageNo + 1}
+                      </Text>
+
+                      <Ionicons
+                        name="arrow-forward"
+                        size={25}
+                        color="#2b65f6"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                )
+              }}
+              style={{ height: '100%' }}
+              data={data}
+              renderItem={items => {
+                return (
+                  <View
+                    style={{
+                      paddingVertical: '3%',
+                      paddingHorizontal: '3%',
+                      // backgroundColor: '#000',
+                      marginVertical: '1%',
+                      elevation: 10,
+                    }}
+                  >
+                    <TouchableOpacity
+                      // onPress={() => bottomSheetRef.current?.expand()}
+                      style={{
+                        paddingVertical: '5%',
+                        backgroundColor: 'rgba(251,251,251,0.5)',
+                        borderRadius: 5,
+                        paddingHorizontal: '5%',
+                      }}
+                    >
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: '#000',
+                            width: '50%',
+                            fontWeight: '600',
+                            fontSize: 15,
+                          }}
+                        >
+                          {items.item.Name}
+                        </Text>
+                        <Text
+                          style={{
+                            color: 'rgba(0,0,0,0.5)',
+                            fontWeight: '600',
+                            fontSize: 15,
+                          }}
+                        >
+                          Size : {items.item.DateUploaded}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          marginTop: '5%',
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: '#000',
+                            width: '50%',
+                            fontWeight: '600',
+                            fontSize: 15,
+                          }}
+                        >
+                          Leechers : {items.item.Leechers}
+                        </Text>
+                        <Text
+                          style={{
+                            color: 'rgba(0,0,0,0.5)',
+                            fontWeight: '600',
+                            fontSize: 15,
+                          }}
+                        >
+                          Seeders : {items.item.Seeders}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                )
+              }}
+            />
+          ) : (
+            <ImageContainer
+              ImageContainerStyle={{
+                height: height / 3,
+                width: height / 3,
+                justifyContent: 'center',
+                alignSelf: 'center',
+              }}
+              imageProps={{ resizeMode: 'contain' }}
+              imageSrc={SearchIllustration}
+              imageStyle={{
+                height: '100%',
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            />
+          )}
+
+          <Animated.View
             style={{
-              bottom: 10,
+              bottom: 20,
               position: 'absolute',
               flexDirection: 'row',
 
               alignItems: 'center',
               justifyContent: 'center',
+              alignSelf: 'center',
+              transform: [{ translateY: slideUp }],
             }}
           >
             <TouchableOpacity
+              onPress={() => {
+                // Slide()
+              }}
               style={{
                 marginHorizontal: '3%',
-                backgroundColor: '#000',
+                backgroundColor: '#fff',
                 height: 50,
                 borderRadius: 5,
-                paddingHorizontal: '15%',
+                paddingHorizontal: '10%',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexDirection: 'row',
               }}
             >
-              <Text>hello</Text>
+              <Octicons name="sort-asc" size={25} />
+              <Text style={{ fontSize: 20 }}>Sort</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={{
-                marginHorizontal: '3%',
+                marginHorizontal: '5%',
                 backgroundColor: '#000',
                 height: 50,
                 borderRadius: 5,
@@ -126,10 +337,11 @@ const Home = () => {
             >
               <Text>hello</Text>
             </TouchableOpacity>
-          </View>
+          </Animated.View>
         </View>
       </View>
-      {loader && <Loader />}
+      {loader ? <Loader /> : null}
+      {/* <BottomSheet ref={bottomSheetRef}></BottomSheet> */}
     </View>
   )
 }
