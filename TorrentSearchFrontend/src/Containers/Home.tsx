@@ -21,7 +21,7 @@ import { SquircleView } from 'react-native-figma-squircle'
 import AnimatedLottieView from 'lottie-react-native'
 import { copy, Loading, SearchIllustration } from '@/Assets'
 import Clipboard from '@react-native-clipboard/clipboard'
-import { Header, Searchbar } from '@/Components'
+import { BottomSheet, Header, Searchbar } from '@/Components'
 import ImageContainer from '@/Components/ImageContainer/ImageContainer'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import Octicons from 'react-native-vector-icons/Octicons'
@@ -37,7 +37,13 @@ const Loader = () => {
         justifyContent: 'center',
       }}
     >
-      <AnimatedLottieView source={Loading} autoPlay={true} loop />
+      <AnimatedLottieView
+        resizeMode="cover"
+        source={Loading}
+        autoPlay={true}
+        style={{ height: height * 0.08 }}
+        loop
+      />
     </View>
   )
 }
@@ -47,8 +53,9 @@ const Home = () => {
   const [loader, setLoader] = useState<boolean>(false)
   const [data, setData] = useState<[] | undefined>(null)
   const [PageNo, setPageNo] = useState(1)
+  const [torrent, setTorrent] = useState({ name: '', magnetLink: '', url: '' })
 
-  const slideUp = useRef(new Animated.Value(100)).current
+  const slideUp = useRef(new Animated.Value(height)).current
 
   const Slide = () => {
     Animated.spring(slideUp, {
@@ -58,15 +65,9 @@ const Home = () => {
   }
   const SlideDown = () => {
     Animated.spring(slideUp, {
-      toValue: height * 0.5,
+      toValue: height,
       useNativeDriver: true,
     }).start()
-  }
-
-  if (data?.length > 1) {
-    Slide()
-  } else {
-    SlideDown()
   }
 
   const getData = (query: string, pageNo: number) => {
@@ -94,6 +95,24 @@ const Home = () => {
         setLoader(false)
       })
   }
+
+  console.log(
+    data?.map(
+      e => e.Magnet,
+
+      //   e.map(items => {
+      //     items.Magnet
+      //   })
+      // }),
+    ),
+  )
+
+  const magnetData = data?.filter(function (el) {
+    if (el.Magnet) {
+      return el.Name
+    }
+  })
+  console.log(magnetData)
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
@@ -211,7 +230,13 @@ const Home = () => {
                     }}
                   >
                     <TouchableOpacity
-                      // onPress={() => bottomSheetRef.current?.expand()}
+                      onPress={() => {
+                        Slide()
+                        setTorrent({
+                          name: items.item.Name,
+                          magnetLink: items.item.Magnet,
+                        })
+                      }}
                       style={{
                         paddingVertical: '5%',
                         backgroundColor: 'rgba(251,251,251,0.5)',
@@ -296,48 +321,15 @@ const Home = () => {
             />
           )}
 
-          <Animated.View
-            style={{
-              bottom: 20,
-              position: 'absolute',
-              flexDirection: 'row',
-
-              alignItems: 'center',
-              justifyContent: 'center',
-              alignSelf: 'center',
-              transform: [{ translateY: slideUp }],
+          <BottomSheet
+            translateY={slideUp}
+            name={torrent.name}
+            magnetLink={torrent.magnetLink}
+            url={torrent.url}
+            onPressClose={() => {
+              SlideDown()
             }}
-          >
-            <TouchableOpacity
-              onPress={() => {
-                // Slide()
-              }}
-              style={{
-                marginHorizontal: '3%',
-                backgroundColor: '#fff',
-                height: 50,
-                borderRadius: 5,
-                paddingHorizontal: '10%',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexDirection: 'row',
-              }}
-            >
-              <Octicons name="sort-asc" size={25} />
-              <Text style={{ fontSize: 20 }}>Sort</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                marginHorizontal: '5%',
-                backgroundColor: '#000',
-                height: 50,
-                borderRadius: 5,
-                paddingHorizontal: '15%',
-              }}
-            >
-              <Text>hello</Text>
-            </TouchableOpacity>
-          </Animated.View>
+          />
         </View>
       </View>
       {loader ? <Loader /> : null}
