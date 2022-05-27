@@ -16,7 +16,6 @@ const torrentFunk = require("./torrentFunk");
 const torrentProject = require("./torrentProject");
 
 async function combo(query, page) {
-  //removed the limetorrents
   let comboTorrent = [],
     timeout = 10000; //wait time before rejecting promised results
   await Promise.allSettled([
