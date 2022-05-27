@@ -48,6 +48,21 @@ const Loader = () => {
   )
 }
 
+let GB = []
+let MB = []
+let KB = []
+const SortSize = (value: string) => {
+  if (value.Size.match('GB')) {
+    return GB.push(value)
+  } else if (value.Size.match('MB')) {
+    return MB.push(value)
+  } else if (value.Size.match('KB')) {
+    return KB.push(value)
+  }
+}
+
+console.log(GB, MB, KB)
+
 const Home = () => {
   const [query, setQuery] = useState('')
   const [loader, setLoader] = useState<boolean>(false)
@@ -84,10 +99,13 @@ const Home = () => {
           pageNo,
       )
       .then(response => {
+        const [data] = response.data.map(e => e)
         setData(() => {
           const [list] = response.data.map(e => e)
           return list
         })
+        // SortSize(data.map(e => e))
+
         setLoader(false)
       })
       .catch(e => {
@@ -96,16 +114,11 @@ const Home = () => {
       })
   }
 
-  console.log(
-    data?.map(
-      e => e.Magnet,
-
-      //   e.map(items => {
-      //     items.Magnet
-      //   })
-      // }),
-    ),
-  )
+  // console.log(
+  //   data?.map(
+  //     e => e.Magnet
+  //   ),
+  // )
 
   const magnetData = data?.filter(function (el) {
     if (el.Magnet) {
@@ -235,7 +248,9 @@ const Home = () => {
                         setTorrent({
                           name: items.item.Name,
                           magnetLink: items.item.Magnet,
+                          url: items.item.url,
                         })
+                        SortSize(items.item)
                       }}
                       style={{
                         paddingVertical: '5%',
@@ -267,7 +282,7 @@ const Home = () => {
                             fontSize: 15,
                           }}
                         >
-                          Size : {items.item.DateUploaded}
+                          Size : {items.item.Size}
                         </Text>
                       </View>
                       <View

@@ -9,7 +9,7 @@ import {
 } from 'react-native'
 import React from 'react'
 import { SquircleView } from 'react-native-figma-squircle'
-
+import Ionicons from 'react-native-vector-icons/Ionicons'
 const { height, width } = Dimensions.get('screen')
 
 interface BottomSheetProps {
@@ -47,11 +47,42 @@ const BottomSheet: React.FunctionComponent<BottomSheetProps> = ({
           borderRadius: 20,
           elevation: 10,
           alignItems: 'center',
-          justifyContent: 'center',
+          paddingTop: '10%',
         }}
       >
-        <Text>{name}</Text>
-        <Text>{magnetLink}</Text>
+        <Text
+          style={{
+            textAlign: 'center',
+            marginHorizontal: '5%',
+            fontWeight: '700',
+            fontSize: 18,
+          }}
+        >
+          {name}
+        </Text>
+        <View
+          style={{
+            padding: '1%',
+            backgroundColor: '#f5f5f5',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderRadius: 10,
+            marginHorizontal: '8%',
+            paddingHorizontal: '2%',
+            paddingVertical: '5%',
+          }}
+        >
+          <Text
+            style={{ marginRight: 10, fontWeight: '700' }}
+            numberOfLines={5}
+          >
+            {magnetLink}
+          </Text>
+          <TouchableOpacity>
+            <Ionicons name="copy" color="#696969" size={20} />
+          </TouchableOpacity>
+        </View>
         <SquircleView
           style={{
             height: 50,
