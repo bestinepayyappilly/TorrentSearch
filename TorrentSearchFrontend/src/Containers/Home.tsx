@@ -69,6 +69,7 @@ const Home = () => {
   const [data, setData] = useState<[] | undefined>(null)
   const [PageNo, setPageNo] = useState(1)
   const [torrent, setTorrent] = useState({ name: '', magnetLink: '', url: '' })
+  const [isVisible, setIsVisible] = useState(false)
 
   const slideUp = useRef(new Animated.Value(height)).current
 
@@ -92,12 +93,13 @@ const Home = () => {
     setLoader(true)
     console.log(pageNo)
     axios
-      .get(
-        'https://shielded-harbor-19811.herokuapp.com/api/all/' +
-          query +
-          '/' +
-          pageNo,
-      )
+      // .get(
+      //   'https://shielded-harbor-19811.herokuapp.com/api/all/' +
+      //     query +
+      //     '/' +
+      //     pageNo,
+      // )
+      .get('http://localhost:8080/api/all/' + query + '/' + pageNo)
       .then(response => {
         const [data] = response.data.map(e => e)
         setData(() => {
@@ -130,7 +132,7 @@ const Home = () => {
   return (
     <View style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
       <View style={{ paddingTop: StatusBar.currentHeight + 10, flex: 1 }}>
-        <StatusBar translucent backgroundColor="transparent" />
+        <StatusBar translucent backgroundColor="#f8f9fa" />
         <View
           style={{
             flex: 0.2,
@@ -244,7 +246,7 @@ const Home = () => {
                   >
                     <TouchableOpacity
                       onPress={() => {
-                        Slide()
+                        setIsVisible(true)
                         setTorrent({
                           name: items.item.Name,
                           magnetLink: items.item.Magnet,
@@ -255,7 +257,7 @@ const Home = () => {
                       style={{
                         paddingVertical: '5%',
                         backgroundColor: 'rgba(251,251,251,0.5)',
-                        borderRadius: 5,
+                        borderRadius: 15,
                         paddingHorizontal: '5%',
                       }}
                     >
@@ -337,12 +339,13 @@ const Home = () => {
           )}
 
           <BottomSheet
-            translateY={slideUp}
+            // translateY={slideUp}
+            isVisible={isVisible}
             name={torrent.name}
             magnetLink={torrent.magnetLink}
             url={torrent.url}
             onPressClose={() => {
-              SlideDown()
+              setIsVisible(false)
             }}
           />
         </View>

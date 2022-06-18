@@ -40,6 +40,7 @@ const Searchbar: React.FunctionComponent<SearchbarProps> = ({
           color: '#000',
           flex: 1,
           marginRight: '3%',
+          minHeight: 50,
         }}
         selectionColor="#000"
         placeholder="Search"
@@ -54,6 +55,7 @@ const Searchbar: React.FunctionComponent<SearchbarProps> = ({
           borderRadius: 8,
           alignItems: 'center',
           justifyContent: 'center',
+          minHeight: 50,
         }}
       >
         <Ionicons name="ios-search-sharp" size={25} color="#fff" />
