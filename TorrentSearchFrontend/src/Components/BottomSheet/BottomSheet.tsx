@@ -7,10 +7,11 @@ import {
   View,
   ViewStyle,
 } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { SquircleView } from 'react-native-figma-squircle'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import BottomSheetModal from './BottomSheetModal'
+import BottomSheetModalNotVisible from './BottomSheetModalNotVisible'
 const { height, width } = Dimensions.get('screen')
 
 interface BottomSheetProps {
@@ -20,6 +21,7 @@ interface BottomSheetProps {
   onPressClose: () => void
   translateY: Animated.Value
   isVisible: boolean
+  setPopup: (value: boolean) => void
 }
 
 const BottomSheet: React.FunctionComponent<BottomSheetProps> = ({
@@ -29,15 +31,21 @@ const BottomSheet: React.FunctionComponent<BottomSheetProps> = ({
   onPressClose,
   translateY,
   isVisible,
+  setPopup,
 }) => {
-  return isVisible ? (
+  return (
     <BottomSheetModal
+      isVisible={isVisible}
       name={name}
       magnetLink={magnetLink}
       url={url}
       onPressButtonClose={onPressClose}
+      setPopup={setPopup}
     />
-  ) : null
+  )
+  // ) : (
+  //   <BottomSheetModalNotVisible />
+  // )
 }
 
 export default BottomSheet

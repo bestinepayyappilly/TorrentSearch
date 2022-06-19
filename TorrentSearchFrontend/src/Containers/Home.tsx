@@ -48,21 +48,6 @@ const Loader = () => {
   )
 }
 
-let GB = []
-let MB = []
-let KB = []
-const SortSize = (value: string) => {
-  if (value.Size.match('GB')) {
-    return GB.push(value)
-  } else if (value.Size.match('MB')) {
-    return MB.push(value)
-  } else if (value.Size.match('KB')) {
-    return KB.push(value)
-  }
-}
-
-console.log(GB, MB, KB)
-
 const Home = () => {
   const [query, setQuery] = useState('')
   const [loader, setLoader] = useState<boolean>(false)
@@ -71,20 +56,40 @@ const Home = () => {
   const [torrent, setTorrent] = useState({ name: '', magnetLink: '', url: '' })
   const [isVisible, setIsVisible] = useState(false)
 
-  const slideUp = useRef(new Animated.Value(height)).current
+  const SortSize = (list: []) => {
+    let GB = []
+    let MB = []
+    let KB = []
+    if (list.length > 1) {
+      list.map(value => {
+        if (value.Size.match('GB')) {
+          GB.push(value)
+        } else if (value.Size.match('MB')) {
+          MB.push(value)
+        } else if (value.Size.match('KB')) {
+          KB.push(value)
+        }
+      })
+    }
+    return { GB, MB, KB }
+    // const ascending=GB.sort()
+  }
 
-  const Slide = () => {
-    Animated.spring(slideUp, {
-      toValue: height * 0.99 - height,
-      useNativeDriver: true,
-    }).start()
+  if (data?.length > 1) {
+    const list = data.map(e => e)
+    // console.log(list.map(e => e.Size.match('MB')))
+    // // console.log(list)
+    // console.log(
+    //   'foreach',
+    //   list.forEach((e, index) => {
+    //     SortSize(e)
+    //   }),
+    // )
+    console.log('this is the sortsize', SortSize(list))
+    // console.log('hello')
   }
-  const SlideDown = () => {
-    Animated.spring(slideUp, {
-      toValue: height,
-      useNativeDriver: true,
-    }).start()
-  }
+
+  const slideUp = useRef(new Animated.Value(height)).current
 
   const getData = (query: string, pageNo: number) => {
     setData(null)
@@ -106,7 +111,7 @@ const Home = () => {
           const [list] = response.data.map(e => e)
           return list
         })
-        // SortSize(data.map(e => e))
+        // SortSize(data.map(e => e.map(item => item)))
 
         setLoader(false)
       })
@@ -127,7 +132,7 @@ const Home = () => {
       return el.Name
     }
   })
-  console.log(magnetData)
+  // console.log(magnetData)
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
@@ -337,20 +342,25 @@ const Home = () => {
               }}
             />
           )}
-
-          <BottomSheet
-            // translateY={slideUp}
-            isVisible={isVisible}
-            name={torrent.name}
-            magnetLink={torrent.magnetLink}
-            url={torrent.url}
-            onPressClose={() => {
-              setIsVisible(false)
-            }}
-          />
         </View>
       </View>
+
+      <BottomSheet
+        // translateY={slideUp}
+        isVisible={isVisible}
+        name={torrent.name}
+        magnetLink={torrent.magnetLink}
+        url={torrent.url}
+        setPopup={() => {
+          setIsVisible(false)
+        }}
+        onPressClose={() => {
+          setIsVisible(false)
+        }}
+      />
+
       {loader ? <Loader /> : null}
+
       {/* <BottomSheet ref={bottomSheetRef}></BottomSheet> */}
     </View>
   )

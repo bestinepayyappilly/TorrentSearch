@@ -37,7 +37,7 @@ const ApplicationNavigator = () => {
 
   return (
     <View style={[Layout.fill, { backgroundColor: '#b6c9f3' }]}>
-      <MyStatusBar backgroundColor={'#fff'} />
+      <MyStatusBar backgroundColor={'#f8f9fa'} />
       <View style={[{ backgroundColor: '#fff' }, Layout.fill]}>
         <NavigationContainer theme={NavigationTheme} ref={navigationRef}>
           <Stack.Navigator screenOptions={{ headerShown: false }}>

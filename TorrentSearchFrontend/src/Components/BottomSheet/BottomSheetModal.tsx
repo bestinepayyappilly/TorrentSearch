@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Share,
 } from 'react-native'
 import React, { useEffect, useRef } from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -18,6 +19,8 @@ interface BottomSheetModalProps {
   name: string
   magnetLink: string
   url: string
+  setPopup: (value: boolean) => void
+  isVisible: boolean
 }
 
 const BottomSheetModal: React.FunctionComponent<BottomSheetModalProps> = ({
@@ -25,12 +28,18 @@ const BottomSheetModal: React.FunctionComponent<BottomSheetModalProps> = ({
   name,
   magnetLink,
   url,
+  setPopup,
+  isVisible,
 }) => {
   const slideUp = useRef(new Animated.Value(height)).current
 
   useEffect(() => {
-    Slide()
-  }, [])
+    if (isVisible) {
+      Slide()
+    } else {
+      SlideDown()
+    }
+  }, [isVisible])
 
   const Slide = () => {
     Animated.spring(slideUp, {
@@ -45,126 +54,172 @@ const BottomSheetModal: React.FunctionComponent<BottomSheetModalProps> = ({
     }).start()
   }
 
-  return (
-    <Animated.View
-      style={{
-        bottom: 20,
-        position: 'absolute',
+  const backStyle = {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 0,
+  }
 
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignSelf: 'center',
-        transform: [{ translateY: slideUp }],
+  return (
+    // <View
+    //   style={[
+    //     {
+    //       height: height,
+    //       width: width,
+    //     },
+    //     !isVisible ? backStyle : null,
+    //   ]}
+    // >
+
+    <TouchableOpacity
+      disabled={!isVisible}
+      onPress={() => {
+        onPressButtonClose()
+        setPopup()
       }}
+      style={
+        isVisible
+          ? [
+              //  StyleSheet.absoluteFill,
+              {
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                left: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0,0,0,0.1)',
+              },
+            ]
+          : {}
+      }
     >
-      <View
+      <Animated.View
         style={{
-          width: width * 0.9,
-          height: height / 2,
-          backgroundColor: '#fff',
-          borderRadius: 20,
-          elevation: 10,
+          bottom: 20,
+          position: 'absolute',
+
           alignItems: 'center',
-          paddingTop: '10%',
+          justifyContent: 'center',
+          alignSelf: 'center',
+          transform: [{ translateY: slideUp }],
         }}
       >
-        <Text
-          style={{
-            textAlign: 'center',
-            marginHorizontal: '8%',
-            fontWeight: '700',
-            fontSize: 18,
-          }}
-        >
-          {name}
-        </Text>
         <View
           style={{
-            padding: '1%',
-            backgroundColor: '#f5f5f5',
-            flexDirection: 'row',
+            width: width * 0.9,
+            height: height / 2,
+            backgroundColor: '#fff',
+            borderRadius: 20,
+            elevation: 10,
             alignItems: 'center',
-            justifyContent: 'space-between',
-            borderRadius: 10,
-            marginHorizontal: '8%',
-            paddingHorizontal: '2%',
-            paddingVertical: '5%',
-            marginTop: 20,
+            paddingTop: '10%',
           }}
         >
           <Text
-            style={{ marginRight: 10, fontWeight: '700' }}
-            numberOfLines={5}
+            style={{
+              textAlign: 'center',
+              marginHorizontal: '8%',
+              fontWeight: '700',
+              fontSize: 18,
+            }}
           >
-            {magnetLink}
+            {name}
           </Text>
-          <TouchableOpacity
-            onPress={() => {
-              Clipboard.setString(magnetLink.toString())
-              Alert.alert('Magnet link has been copied')
-              // Toast
-            }}
-          >
-            <Ionicons name="copy" color="#696969" size={20} />
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            paddingHorizontal: '10%',
-            flexDirection: 'row',
-            marginTop: 15,
-          }}
-        >
-          <TouchableOpacity
+          <View
             style={{
+              padding: '1%',
+              backgroundColor: '#f5f5f5',
+              flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'center',
-              paddingHorizontal: 12,
-              paddingVertical: 12,
-              borderRadius: 50,
-              backgroundColor: '#2b65f6',
-            }}
-          >
-            <Ionicons name="share" size={30} color={'#fff'} />
-          </TouchableOpacity>
-        </View>
-        <SquircleView
-          style={{
-            height: 50,
-            width: width * 0.7,
-            position: 'absolute',
-            bottom: 20,
-            overflow: 'hidden',
-          }}
-          squircleParams={{
-            cornerSmoothing: 0.7,
-            cornerRadius: 10,
-            fillColor: 'pink',
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              onPressButtonClose()
-            }}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              flex: 1,
+              justifyContent: 'space-between',
+              borderRadius: 10,
+              marginHorizontal: '8%',
+              paddingHorizontal: '2%',
+              paddingVertical: '5%',
+              marginTop: 20,
             }}
           >
             <Text
-              style={{
-                fontWeight: '600',
-                fontSize: 20,
-                color: 'rgba(0,0,0,0.7)',
+              style={{ marginRight: 10, fontWeight: '700' }}
+              numberOfLines={5}
+            >
+              {magnetLink}
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                Clipboard.setString(magnetLink.toString())
+                Alert.alert('Magnet link has been copied')
+                // Toast
               }}
             >
-              Close
-            </Text>
-          </TouchableOpacity>
-        </SquircleView>
-      </View>
-    </Animated.View>
+              <Ionicons name="copy" color="#696969" size={20} />
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              paddingHorizontal: '10%',
+              flexDirection: 'row',
+              marginTop: 15,
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                Share.share({ message: magnetLink, title: name })
+              }}
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingHorizontal: 12,
+                paddingVertical: 12,
+                borderRadius: 50,
+                backgroundColor: '#2b65f6',
+              }}
+            >
+              <Ionicons name="share" size={30} color={'#fff'} />
+            </TouchableOpacity>
+          </View>
+          <SquircleView
+            style={{
+              height: 50,
+              width: width * 0.7,
+              position: 'absolute',
+              bottom: 20,
+              overflow: 'hidden',
+            }}
+            squircleParams={{
+              cornerSmoothing: 0.7,
+              cornerRadius: 10,
+              fillColor: 'pink',
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                onPressButtonClose()
+              }}
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                flex: 1,
+              }}
+            >
+              <Text
+                style={{
+                  fontWeight: '600',
+                  fontSize: 20,
+                  color: 'rgba(0,0,0,0.7)',
+                }}
+              >
+                Close
+              </Text>
+            </TouchableOpacity>
+          </SquircleView>
+        </View>
+      </Animated.View>
+    </TouchableOpacity>
+
+    // </View>
   )
 }
 
