@@ -7,6 +7,7 @@ import {
   FlatList,
   Image,
   Keyboard,
+  Platform,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -75,19 +76,19 @@ const Home = () => {
     // const ascending=GB.sort()
   }
 
-  if (data?.length > 1) {
-    const list = data.map(e => e)
-    // console.log(list.map(e => e.Size.match('MB')))
-    // // console.log(list)
-    // console.log(
-    //   'foreach',
-    //   list.forEach((e, index) => {
-    //     SortSize(e)
-    //   }),
-    // )
-    console.log('this is the sortsize', SortSize(list))
-    // console.log('hello')
-  }
+  // if (data?.length > 1) {
+  //   const list = data.map(e => e)
+  //   // console.log(list.map(e => e.Size.match('MB')))
+  //   // // console.log(list)
+  //   // console.log(
+  //   //   'foreach',
+  //   //   list.forEach((e, index) => {
+  //   //     SortSize(e)
+  //   //   }),
+  //   // )
+  //   console.log('this is the sortsize', SortSize(list))
+  //   // console.log('hello')
+  // }
 
   const slideUp = useRef(new Animated.Value(height)).current
 
@@ -104,7 +105,11 @@ const Home = () => {
       //     '/' +
       //     pageNo,
       // )
-      .get('http://localhost:8080/api/all/' + query + '/' + pageNo)
+      .get(
+        Platform.OS === 'ios'
+          ? 'http://localhost:8080/api/all/' + query + '/' + pageNo
+          : 'http://192.168.29.189:8080/api/all/' + query + '/' + pageNo,
+      )
       .then(response => {
         const [data] = response.data.map(e => e)
         setData(() => {
@@ -136,8 +141,18 @@ const Home = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
-      <View style={{ paddingTop: StatusBar.currentHeight + 10, flex: 1 }}>
-        <StatusBar translucent backgroundColor="#f8f9fa" />
+      <View
+        style={{
+          paddingTop:
+            Platform.OS === 'ios' ? StatusBar.currentHeight + 10 : null,
+          flex: 1,
+        }}
+      >
+        <StatusBar
+          translucent
+          backgroundColor="#f8f9fa"
+          barStyle={'dark-content'}
+        />
         <View
           style={{
             flex: 0.2,
@@ -257,7 +272,7 @@ const Home = () => {
                           magnetLink: items.item.Magnet,
                           url: items.item.url,
                         })
-                        SortSize(items.item)
+                        // SortSize(items.item)
                       }}
                       style={{
                         paddingVertical: '5%',

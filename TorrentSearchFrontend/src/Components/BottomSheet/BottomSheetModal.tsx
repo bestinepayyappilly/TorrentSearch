@@ -7,6 +7,9 @@ import {
   TouchableOpacity,
   View,
   Share,
+  Platform,
+  ToastAndroid,
+  TouchableHighlight,
 } from 'react-native'
 import React, { useEffect, useRef } from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -74,6 +77,7 @@ const BottomSheetModal: React.FunctionComponent<BottomSheetModalProps> = ({
     // >
 
     <TouchableOpacity
+      activeOpacity={1}
       disabled={!isVisible}
       onPress={() => {
         onPressButtonClose()
@@ -89,7 +93,7 @@ const BottomSheetModal: React.FunctionComponent<BottomSheetModalProps> = ({
                 right: 0,
                 left: 0,
                 bottom: 0,
-                backgroundColor: 'rgba(0,0,0,0.1)',
+                backgroundColor: 'rgba(251,251,251,0.3)',
               },
             ]
           : {}
@@ -118,6 +122,7 @@ const BottomSheetModal: React.FunctionComponent<BottomSheetModalProps> = ({
           }}
         >
           <Text
+            numberOfLines={3}
             style={{
               textAlign: 'center',
               marginHorizontal: '8%',
@@ -150,7 +155,9 @@ const BottomSheetModal: React.FunctionComponent<BottomSheetModalProps> = ({
             <TouchableOpacity
               onPress={() => {
                 Clipboard.setString(magnetLink.toString())
-                Alert.alert('Magnet link has been copied')
+                // Platform.OS === 'ios'
+                //   ? Alert.alert('Magnet link has been copied')
+                //   : ToastAndroid.show('Magnet Link has been copied', 300)
                 // Toast
               }}
             >
