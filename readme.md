@@ -6,7 +6,7 @@
 <h1>What a sham, nothing I can do about that</h1>
 
 <img src="https://github.com/bestinepayyappilly/TorrentSearch/blob/main/TorrentSearchFrontend/giphy%20(1).gif" width="400" height="350" />
-<h3>And then I decided why waste my time on thesee people and just make it a simple project and that's what I did. I no longer needed to switch on my VPN and search torrent websites for the perfect torrent. It was all there in my app and i can create a ipa file whenever i needed for an iPhone. Not like I have an iPhone but, in the untimely desicion that i may take to switch to an iPhone, that case was also done.</h3> 
+<h3>And then I decided why waste my time on these people and just make it a simple project and that's what I did. I no longer needed to switch on my VPN and search torrent websites for the perfect torrent. It was all there in my app and i can create a ipa file whenever i needed for an iPhone. Not like I have an iPhone but, in the untimely desicion that i may take to switch to an iPhone, that case was also done.</h3> 
 
 So What have I done so far,
 - [x] Used a premade scrapper from github for the backend access to all available torrents.
