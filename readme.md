@@ -40,7 +40,7 @@ I'll first do iOS:
 
 2.to build in a simulator you just have to do yarn ios or npx react-native run-ios
 
-3. its possible xcode will come with an error but ill leave tha for you to handle
+3. its possible xcode will come with an error but ill leave that for you to handle
 
 Android:
 
